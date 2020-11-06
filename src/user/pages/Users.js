@@ -19,7 +19,10 @@ const Users = () => {
         setLoadedUsers(responseData.users);
       } catch (err) {}
     };
-    fetchUsers();
+    setTimeout(() => {
+      fetchUsers();
+      document.getElementById('temp-img').style.display = "none";
+    }, 3000);
   }, [sendRequest]);
 
   return (
@@ -31,6 +34,7 @@ const Users = () => {
         </div>
       )}
       {!isLoading && loadedUsers && <UsersList items={loadedUsers} />}
+      <img id="temp-img" style={{width: 100 + '%'}} src="./logo.png" />
     </React.Fragment>
   );
 };

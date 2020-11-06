@@ -8,9 +8,11 @@ import ErrorModal from '../../shared/components/UIElements/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner';
 import { AuthContext } from '../../shared/context/auth-context';
 import { useHttpClient } from '../../shared/hooks/http-hook';
+import LarperList from './LarperList';
 import './PlaceItem.css';
 
 const PlaceItem = props => {
+  console.log(props);
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const auth = useContext(AuthContext);
   const [showMap, setShowMap] = useState(false);
@@ -42,6 +44,23 @@ const PlaceItem = props => {
       props.onDelete(props.id);
     } catch (err) {}
   };
+
+  const joinBattle = async () => {
+    try {
+      await sendRequest(
+        process.env.REACT_APP_BACKEND_URL + `/places/join/${props.id}`,
+        'PATCH',
+        null,
+        {
+          Authorization: 'Bearer ' + auth.token
+        }
+      );
+      props.onDelete(props.id);
+    } catch (err) {
+      debugger;
+      console.log(err);
+    }
+  }
 
   return (
     <React.Fragment>
@@ -97,6 +116,11 @@ const PlaceItem = props => {
             <Button inverse onClick={openMapHandler}>
               VIEW ON MAP
             </Button>
+            {auth.isLoggedIn && auth.userId !== props.creatorId && (
+              <Button inverse onClick={joinBattle}>
+                Join Battle!
+              </Button>
+            )}
             {auth.userId === props.creatorId && (
               <Button to={`/places/${props.id}`}>EDIT</Button>
             )}
@@ -106,6 +130,10 @@ const PlaceItem = props => {
                 DELETE
               </Button>
             )}
+
+            <br />
+            <p>Larpers:</p>
+            <LarperList larpers={props.larpers} />
           </div>
         </Card>
       </li>
